@@ -21,7 +21,7 @@ class MainWindow(QMainWindow):
         self.button_open_file.clicked.connect(self.open_file)
 
     def _create_maze_widget(self) -> None:
-        self._maze_widget: MazeWidget = MazeWidget()
+        self._maze_widget: MazeWidget = MazeWidget(self._maze)
         self.layout_maze.addWidget(self._maze_widget)
 
     def _init_ui(self) -> None:
@@ -38,3 +38,4 @@ class MainWindow(QMainWindow):
         file_name = QFileDialog.getOpenFileName(self, "Открыть файл", ".", "Текстовые файлы (*.txt *.dat)")[0]
         if file_name:
             self._maze.read_maze_from_file(file_name)
+            self._maze_widget.update_maze()
