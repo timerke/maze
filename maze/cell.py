@@ -10,6 +10,6 @@ class Cell:
 
     def __eq__(self, other) -> bool:
         return self.x == other.x and self.y == other.y
-    
+
     def __lt__(self, other) -> bool:
         return self.f < other.f
