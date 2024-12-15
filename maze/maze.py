@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Generator, List, Optional
 from PyQt5.QtCore import QPointF, QRectF, QSizeF
 from . import utils as ut
 from .cell import Cell
@@ -20,20 +20,12 @@ class Maze:
         self._y_size: Optional[int] = None
 
     @property
-    def finish_point(self) -> QRectF:
+    def finish_cell(self) -> QRectF:
         """
-        :return:
-        """
-
-        return self._get_rect_for_cell(self._finish_cell)
-
-    @property
-    def start_point(self) -> QRectF:
-        """
-        :return:
+        :return: прямоугольник для рисования выхода из лабиринта.
         """
 
-        return self._get_rect_for_cell(self._start_cell)
+        return self._get_rect_for_cell(self._finish_cell, Maze.POINT_SIZE)
 
     @property
     def maze_boundaries(self) -> QRectF:
@@ -42,6 +34,14 @@ class Maze:
         """
 
         return QRectF(QPointF(-0.5, -0.5), QSizeF(self._x_size, self._y_size))
+
+    @property
+    def start_cell(self) -> QRectF:
+        """
+        :return: прямоугольник для рисования входа в лабиринт.
+        """
+
+        return self._get_rect_for_cell(self._start_cell, Maze.POINT_SIZE)
 
     @property
     def x_size(self) -> int:
@@ -60,13 +60,15 @@ class Maze:
         return self._y_size
 
     @staticmethod
-    def _get_rect_for_cell(cell: Cell) -> QRectF:
+    def _get_rect_for_cell(cell: Cell, size: float) -> QRectF:
         """
-        :return:
+        :param cell: ячейка, которую нужно нарисовать;
+        :param size: 
+        :return: прямоугольник для рисования заданной ячейки.
         """
 
-        top_left = QPointF(cell.x - Maze.POINT_SIZE / 2, cell.y - Maze.POINT_SIZE / 2)
-        bottom_right = QPointF(cell.x + Maze.POINT_SIZE / 2, cell.y + Maze.POINT_SIZE / 2)
+        top_left = QPointF(cell.x - size / 2, cell.y - size / 2)
+        bottom_right = QPointF(cell.x + size / 2, cell.y + size / 2)
         return QRectF(top_left, bottom_right)
 
     def clear(self) -> None:
@@ -75,6 +77,14 @@ class Maze:
         self._start_cell = None
         self._x_size = None
         self._y_size = None
+
+    def get_obstacles(self) -> Generator[QRectF, None, None]:
+        """
+        :yield:
+        """
+
+        for obstacle in self._obstacles:
+            yield self._get_rect_for_cell(obstacle, 1)
 
     def read_maze_from_file(self, file_name: str) -> "Maze":
         """
