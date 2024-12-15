@@ -1,2 +1,6 @@
-# maze
-Finding a way out of the maze
+# Лабиринт
+
+## Запуск
+
+1. Запустите скрипт **install_deps.bat**.
+2. Запустите скрипт **run.bat**.
