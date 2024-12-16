@@ -63,19 +63,28 @@ class AStar(QThread):
                 new_g = current_cell.g + 1
 
                 # Если соседний узел уже находится в очереди с приоритетами
-                if nfo := next((n for n in open_cells if n == neighbor), None):
+                for cell in open_cells:
+                    if cell == neighbor:
+                        old_neighbor = neighbor
+                        break
+                else:
+                    old_neighbor = None
+
+                if old_neighbor:
                     # Если новое расстояние до соседнего узла меньше, чем старое, обновляем значения g, h и f
-                    if new_g < nfo.g:
-                        nfo.g = new_g
-                        nfo.h = math.sqrt((self._maze.finish_cell.x - nfo.x) ** 2 + (self._maze.finish_cell.y - nfo.y) ** 2)
-                        nfo.f = nfo.g + nfo.h
-                        nfo.parent = current_cell
+                    if new_g < old_neighbor.g:
+                        old_neighbor.g = new_g
+                        old_neighbor.h = math.sqrt((self._maze.finish_cell.x - old_neighbor.x) ** 2 +
+                                                   (self._maze.finish_cell.y - old_neighbor.y) ** 2)
+                        old_neighbor.f = old_neighbor.g + old_neighbor.h
+                        old_neighbor.parent = current_cell
                         # Обновляем приоритет соседнего узла в очереди с приоритетами
                         heapq.heapify(open_cells)
                 else:
                     # Иначе добавляем соседний узел в очередь с приоритетами и вычисляем значения g, h и f
                     neighbor.g = new_g
-                    neighbor.h = math.sqrt((self._maze.finish_cell.x - neighbor.x) ** 2 + (self._maze.finish_cell.y - neighbor.y) ** 2)
+                    neighbor.h = math.sqrt((self._maze.finish_cell.x - neighbor.x) ** 2 +
+                                           (self._maze.finish_cell.y - neighbor.y) ** 2)
                     neighbor.f = neighbor.g + neighbor.h
                     neighbor.parent = current_cell
                     heapq.heappush(open_cells, neighbor)

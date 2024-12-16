@@ -1,6 +1,6 @@
 from typing import List
-from PyQt5.QtCore import QLineF, QPoint, QPointF, QRectF, QSizeF, Qt
-from PyQt5.QtGui import QBrush, QColor, QPen, QWheelEvent
+from PyQt5.QtCore import QLineF, QPointF, QRectF, QSizeF, Qt
+from PyQt5.QtGui import QBrush, QColor, QPen
 from PyQt5.QtWidgets import QFrame, QGraphicsScene, QGraphicsView
 from . import utils as ut
 from .cell import Cell
@@ -48,10 +48,12 @@ class MazeWidget(QGraphicsView):
     def _draw_mesh(self) -> None:
         self.scene().addRect(self._maze.maze_boundaries, self._border_pen)
         for y in range(self._maze.y_size - 1):
-            self.scene().addLine(QLineF(QPointF(-0.5, y + 0.5), QPointF(self._maze.x_size - 0.5, y + 0.5)), self._line_pen)
+            self.scene().addLine(QLineF(QPointF(-0.5, y + 0.5), QPointF(self._maze.x_size - 0.5, y + 0.5)),
+                                 self._line_pen)
 
         for x in range(self._maze.x_size - 1):
-            self.scene().addLine(QLineF(QPointF(x + 0.5, -0.5), QPointF(x + 0.5, self._maze.y_size - 0.5)), self._line_pen)
+            self.scene().addLine(QLineF(QPointF(x + 0.5, -0.5), QPointF(x + 0.5, self._maze.y_size - 0.5)),
+                                 self._line_pen)
 
     def _draw_obstacles(self) -> None:
         for obstacle in self._maze.get_rects_for_obstacles():
