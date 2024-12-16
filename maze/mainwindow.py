@@ -56,6 +56,7 @@ class MainWindow(QMainWindow):
 
     @pyqtSlot()
     def find_way_out_of_maze(self) -> None:
+        self._maze_widget.update_maze()
         self._astar.find_path()
 
     @pyqtSlot()

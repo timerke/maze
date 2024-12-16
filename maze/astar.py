@@ -12,6 +12,7 @@ class AStar(QThread):
     Класс, в котором происходит поиск выхода из лабиринта методом A*.
     """
 
+    SLEEP_TIME_S: float = 0.01
     TIMEOUT_S: float = 0.1
     current_cell_signal: pyqtSignal = pyqtSignal(Cell)
     final_path_signal: pyqtSignal = pyqtSignal(list)
@@ -92,6 +93,8 @@ class AStar(QThread):
             neighbors = self._get_neighbors(current_cell)
             for neighbor in neighbors:
                 self._update_open_cells(current_cell, neighbor)
+
+            time.sleep(AStar.SLEEP_TIME_S)
 
         self._send_path()
 
