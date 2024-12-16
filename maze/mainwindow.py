@@ -3,6 +3,7 @@ from typing import List
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QFileDialog, QMainWindow
 from PyQt5.uic import loadUi
+from . import utils as ut
 from .astar import AStar
 from .cell import Cell
 from .maze import Maze
@@ -17,14 +18,17 @@ class MainWindow(QMainWindow):
     def __init__(self) -> None:
         super().__init__()
         self._maze: Maze = Maze()
-        self._astar: AStar = AStar(self._maze)
-        self._astar.final_path_signal.connect(self._show_path)
-        self._astar.start()
+        self._create_astar()
         self._init_ui()
 
     def _connect_buttons(self) -> None:
         self.button_find_way_out_of_maze.clicked.connect(self.find_way_out_of_maze)
         self.button_open_file.clicked.connect(self.open_file)
+
+    def _create_astar(self) -> None:
+        self._astar: AStar = AStar(self._maze)
+        self._astar.final_path_signal.connect(self._show_path)
+        self._astar.start()
 
     def _create_maze_widget(self) -> None:
         self._maze_widget: MazeWidget = MazeWidget(self._maze)
@@ -37,11 +41,18 @@ class MainWindow(QMainWindow):
 
     @pyqtSlot(list)
     def _show_path(self, path: List[Cell]) -> None:
-        self._maze_widget.show_path(path)
+        """
+        :param path: список ячеек, образующих выход из лабиринта.
+        """
+
+        if path:
+            self._maze_widget.show_path(path)
+            ut.show_message("Информация", "Выход из лабиринта найден.")
+        else:
+            ut.show_message("Информация", "Не удалось найти выход из лабиринта.")
 
     @pyqtSlot()
     def find_way_out_of_maze(self) -> None:
-        print("Find way")
         self._astar.find_path()
 
     @pyqtSlot()
