@@ -1,7 +1,7 @@
 import heapq
 import math
 import time
-from typing import List, Set
+from typing import List, Optional, Set
 from PyQt5.QtCore import pyqtSignal, QThread
 from .cell import Cell
 from .maze import Maze
@@ -27,7 +27,7 @@ class AStar(QThread):
         self._maze: Maze = maze
 
     @staticmethod
-    def _create_path_for_final_cell(cell: Cell) -> List[Cell]:
+    def _create_path_for_final_cell(cell: Optional[Cell] = None) -> List[Cell]:
         """
         :param cell: финальная ячейка, до которой нужно построить путь.
         :return: список из ячеек до финальной.
@@ -49,7 +49,7 @@ class AStar(QThread):
         neighbors = []
         for y in range(cell.y - 1, cell.y + 2):
             for x in range(cell.x - 1, cell.x + 2):
-                if (x == cell.x and y == cell.y or Point(x, y) in self._closed_cells or
+                if (x == cell.x and y == cell.y or (x != cell.x and y != cell.y) or Point(x, y) in self._closed_cells or
                         not self._maze.check_valid_position(x, y)):
                     continue
 
@@ -102,7 +102,9 @@ class AStar(QThread):
                     neighbor.parent = current_cell
                     heapq.heappush(open_cells, neighbor)
 
-    def _send_path(self, cell: Cell) -> None:
+        self._send_path()
+
+    def _send_path(self, cell: Optional[Cell] = None) -> None:
         """
         Метод отправляет путь из лабиринта.
         :param cell: финальная ячейка из лабиринта.
