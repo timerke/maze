@@ -8,7 +8,7 @@ from .cell import Cell
 def get_rect_for_cell(cell: Cell, size: float) -> QRectF:
     """
     :param cell: ячейка, которую нужно нарисовать;
-    :param size:
+    :param size: ширина и высота ячейки.
     :return: прямоугольник для рисования заданной ячейки.
     """
 
@@ -30,9 +30,9 @@ def read_file(file_name: str) -> str:
 def show_message(title: str, text: str, icon: QMessageBox.Icon = QMessageBox.Information, additional_text: str = "",
                  detailed_text: str = "") -> None:
     """
-    :param title:
-    :param text:
-    :param icon:
+    :param title: заголовок окна с сообщением;
+    :param text: текст сообщения;
+    :param icon: иконка окна с сообщением;
     :param additional_text:
     :param detailed_text:
     """

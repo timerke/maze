@@ -18,8 +18,8 @@ class MainWindow(QMainWindow):
     def __init__(self) -> None:
         super().__init__()
         self._maze: Maze = Maze()
-        self._create_astar()
         self._init_ui()
+        self._create_astar()
 
     def _connect_buttons(self) -> None:
         self.button_find_way_out_of_maze.clicked.connect(self.find_way_out_of_maze)
@@ -27,7 +27,9 @@ class MainWindow(QMainWindow):
 
     def _create_astar(self) -> None:
         self._astar: AStar = AStar(self._maze)
+        self._astar.current_cell_signal.connect(self._maze_widget.set_current_cell)
         self._astar.final_path_signal.connect(self._show_path)
+        self._astar.neighbor_cell_signal.connect(self._maze_widget.set_neighbor_cell)
         self._astar.start()
 
     def _create_maze_widget(self) -> None:
@@ -46,7 +48,8 @@ class MainWindow(QMainWindow):
         """
 
         if path:
-            self._maze_widget.show_path(path)
+            self._maze.set_path(path)
+            self._maze_widget.show_path()
             ut.show_message("Информация", "Выход из лабиринта найден.")
         else:
             ut.show_message("Информация", "Не удалось найти выход из лабиринта.")

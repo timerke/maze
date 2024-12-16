@@ -1,4 +1,4 @@
-from .point import Point
+from PyQt5.QtCore import QPointF
 
 
 class Cell:
@@ -26,9 +26,9 @@ class Cell:
         return self.f < other.f
 
     @property
-    def point(self) -> Point:
+    def point(self) -> QPointF:
         """
         :return: координата ячейки.
         """
 
-        return Point(self.x, self.y)
+        return QPointF(self.x, self.y)
