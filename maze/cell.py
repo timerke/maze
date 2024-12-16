@@ -1,6 +1,17 @@
+from .point import Point
+
+
 class Cell:
+    """
+    Класс для ячейки.
+    """
 
     def __init__(self, x: int, y: int) -> None:
+        """
+        :param x: горизонтальная координата;
+        :param y: вертикальная координата.
+        """
+
         self.parent = None
         self.x: int = x
         self.y: int = y
@@ -13,3 +24,11 @@ class Cell:
 
     def __lt__(self, other) -> bool:
         return self.f < other.f
+
+    @property
+    def point(self) -> Point:
+        """
+        :return: координата ячейки.
+        """
+
+        return Point(self.x, self.y)

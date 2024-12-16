@@ -1,36 +1,36 @@
 import heapq
 import math
 import time
-from typing import List
+from typing import List, Set
 from PyQt5.QtCore import pyqtSignal, QThread
 from .cell import Cell
 from .maze import Maze
+from .point import Point
 
 
 class AStar(QThread):
+    """
+    Класс, в котором происходит поиск выхода из лабиринта методом A*.
+    """
 
     final_path_signal: pyqtSignal = pyqtSignal(list)
 
     def __init__(self, maze: Maze) -> None:
+        """
+        :param maze: объект, в котором хранятся основные данные лабиринта.
+        """
+
         super().__init__()
+        self._closed_cells: Set[Point] = set()
         self._is_alive: bool = True
         self._is_running: bool = False
         self._maze: Maze = maze
 
-    def _get_neighbors(self, cell: Cell) -> List[Cell]:
-        neighbors = []
-        for y in range(cell.y - 1, cell.y + 2):
-            for x in range(cell.x - 1, cell.x + 2):
-                if x == cell.x and y == cell.y or not self._maze.check_valid_position(x, y):
-                    continue
-
-                neighbors.append(Cell(x, y))
-
-        return neighbors
-
-    def _send_path(self, cell: Cell) -> List[Cell]:
+    @staticmethod
+    def _create_path_for_final_cell(cell: Cell) -> List[Cell]:
         """
-        :return: путь от заданной ячейки до исходной.
+        :param cell: финальная ячейка, до которой нужно построить путь.
+        :return: список из ячеек до финальной.
         """
 
         path = []
@@ -38,11 +38,27 @@ class AStar(QThread):
             path.append(cell)
             cell = cell.parent
 
-        self.final_path_signal.emit(path[::-1])
+        return path[::-1]
+
+    def _get_neighbors(self, cell: Cell) -> List[Cell]:
+        """
+        :param cell: ячейка, для которой нужно вернуть соседние ячейки.
+        :return: список соседних ячеек.
+        """
+
+        neighbors = []
+        for y in range(cell.y - 1, cell.y + 2):
+            for x in range(cell.x - 1, cell.x + 2):
+                if (x == cell.x and y == cell.y or Point(x, y) in self._closed_cells or
+                        not self._maze.check_valid_position(x, y)):
+                    continue
+
+                neighbors.append(Cell(x, y))
+
+        return neighbors
 
     def _run_astar(self) -> None:
-        print("START")
-        closed_cells = set()
+        self._closed_cells = set()
         open_cells = []
         heapq.heappush(open_cells, self._maze.start_cell)
         while open_cells:
@@ -52,13 +68,10 @@ class AStar(QThread):
                 self._send_path(current_cell)
                 return
 
-            closed_cells.add((current_cell.x, current_cell.y))
+            self._closed_cells.add(current_cell.point)
             neighbors = self._get_neighbors(current_cell)
 
             for neighbor in neighbors:
-                if (neighbor.x, neighbor.y) in closed_cells:
-                    continue
-
                 # Вычисляем расстояние от начального узла до соседнего узла
                 new_g = current_cell.g + 1
 
@@ -88,7 +101,15 @@ class AStar(QThread):
                     neighbor.f = neighbor.g + neighbor.h
                     neighbor.parent = current_cell
                     heapq.heappush(open_cells, neighbor)
-        print("FINISH")
+
+    def _send_path(self, cell: Cell) -> None:
+        """
+        Метод отправляет путь из лабиринта.
+        :param cell: финальная ячейка из лабиринта.
+        """
+
+        path = self._create_path_for_final_cell(cell)
+        self.final_path_signal.emit(path)
 
     def find_path(self) -> None:
         self._is_running = True
@@ -99,7 +120,7 @@ class AStar(QThread):
                 self._run_astar()
                 self._is_running = False
 
-            time.sleep(0.5)
+            time.sleep(0.1)
 
     def stop(self) -> None:
         self._is_alive = False
