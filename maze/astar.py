@@ -1,6 +1,5 @@
 import heapq
 import math
-import time
 from typing import List, Optional, Set
 from PyQt5.QtCore import pyqtSignal, QPointF, QThread
 from .cell import Cell
@@ -12,8 +11,8 @@ class AStar(QThread):
     Класс, в котором происходит поиск выхода из лабиринта методом A*.
     """
 
-    SLEEP_TIME_S: float = 0.01
-    TIMEOUT_S: float = 0.1
+    SLEEP_TIME_MS: int = 10
+    TIMEOUT_MS: int = 100
     current_cell_signal: pyqtSignal = pyqtSignal(Cell)
     final_path_signal: pyqtSignal = pyqtSignal(list)
     neighbor_cell_signal: pyqtSignal = pyqtSignal(Cell)
@@ -94,7 +93,7 @@ class AStar(QThread):
             for neighbor in neighbors:
                 self._update_open_cells(current_cell, neighbor)
 
-            time.sleep(AStar.SLEEP_TIME_S)
+            QThread.msleep(AStar.SLEEP_TIME_MS)
 
         self._send_path()
 
@@ -148,7 +147,7 @@ class AStar(QThread):
                 self._run_astar()
                 self._is_running = False
 
-            time.sleep(AStar.TIMEOUT_S)
+            QThread.msleep(AStar.TIMEOUT_MS)
 
     def stop(self) -> None:
         self._is_alive = False
