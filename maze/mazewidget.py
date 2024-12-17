@@ -77,7 +77,7 @@ class MazeWidget(QGraphicsView):
             self.scene().addEllipse(start_cell, self._start_cell_pen, self._start_cell_brush)
 
     def _fit_image(self) -> None:
-        if self._maze.x_size is not None and self._maze.y_size:
+        if self._maze.x_size is not None and self._maze.y_size is not None:
             self.fitInView(QRectF(QPointF(-1, -1), QSizeF(self._maze.x_size + 1, self._maze.y_size + 1)),
                            Qt.AspectRatioMode.KeepAspectRatio)
 

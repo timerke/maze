@@ -63,16 +63,48 @@ class Maze:
         return self._y_size
 
     def _create_empty_cells(self) -> List[List[str]]:
+        """
+        :return: список с пробелами, которые представляют пустые ячейки.
+        """
+
         if self._x_size and self._y_size:
             return [[" "] * self._x_size for _ in range(self._y_size)]
 
         return []
 
+    def _print_obstacles(self, cells: List[List[str]]) -> None:
+        """
+        :param cells: список с ячейками.
+        """
+
+        for obstacle in self._obstacles:
+            cells[int(obstacle.y())][int(obstacle.x())] = "*"
+
+    def _print_path(self, cells: List[List[str]]) -> None:
+        """
+        :param cells: список с ячейками.
+        """
+
+        for cell in self._path:
+            if cells[cell.y][cell.x] not in ("A", "B"):
+                cells[cell.y][cell.x] = "0"
+
+    def _print_start_and_finish_cells(self, cells: List[List[str]]) -> None:
+        """
+        :param cells: список с ячейками.
+        """
+
+        if self._start_cell:
+            cells[self._start_cell.y][self._start_cell.x] = "A"
+
+        if self._finish_cell:
+            cells[self._finish_cell.y][self._finish_cell.x] = "B"
+
     @staticmethod
     def _transform_to_text(cells: List[List[str]]) -> str:
         """
-        :param cells:
-        :return:
+        :param cells: список с ячейками.
+        :return: текст, в котором объединены все ячейки.
         """
 
         return "\n".join(["".join(row) for row in cells])
@@ -159,6 +191,10 @@ class Maze:
         """
 
         cells = self._create_empty_cells()
+        self._print_start_and_finish_cells(cells)
+        self._print_obstacles(cells)
+        self._print_path(cells)
+
         text = self._transform_to_text(cells)
         ut.save_to_file(file_name, text)
 
