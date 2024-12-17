@@ -78,8 +78,11 @@ class AStar(QThread):
     def _run_astar(self) -> None:
         self._closed_cells = set()
         self._open_cells = []
-        heapq.heappush(self._open_cells, self._maze.start_cell)
+        if self._maze.start_cell is None or self._maze.finish_cell is None:
+            self._send_path()
+            return
 
+        heapq.heappush(self._open_cells, self._maze.start_cell)
         while self._open_cells:
             current_cell = heapq.heappop(self._open_cells)  # Извлекаем ячейку с наименьшей оценкой f
             self.current_cell_signal.emit(current_cell)

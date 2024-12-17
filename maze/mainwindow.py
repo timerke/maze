@@ -24,6 +24,7 @@ class MainWindow(QMainWindow):
     def _connect_buttons(self) -> None:
         self.button_find_way_out_of_maze.clicked.connect(self.find_way_out_of_maze)
         self.button_open_file.clicked.connect(self.open_file)
+        self.button_save_to_file.clicked.connect(self.save_to_file)
 
     def _create_astar(self) -> None:
         self._astar: AStar = AStar(self._maze)
@@ -65,3 +66,9 @@ class MainWindow(QMainWindow):
         if file_name:
             self._maze.read_maze_from_file(file_name)
             self._maze_widget.update_maze()
+
+    @pyqtSlot()
+    def save_to_file(self) -> None:
+        file_name = QFileDialog.getSaveFileName(self, "Сохранить в файл", ".", "Текстовые файлы (*.txt *.dat)")[0]
+        if file_name:
+            self._maze.save_maze_to_file(file_name)

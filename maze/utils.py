@@ -1,20 +1,24 @@
 import os
+from typing import Optional
 from PyQt5.QtCore import QPointF, QRectF, Qt
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QMessageBox
 from .cell import Cell
 
 
-def get_rect_for_cell(cell: Cell, size: float) -> QRectF:
+def get_rect_for_cell(cell: Optional[Cell], size: float) -> Optional[QRectF]:
     """
     :param cell: ячейка, которую нужно нарисовать;
     :param size: ширина и высота ячейки.
     :return: прямоугольник для рисования заданной ячейки.
     """
 
-    top_left = QPointF(cell.x - size / 2, cell.y - size / 2)
-    bottom_right = QPointF(cell.x + size / 2, cell.y + size / 2)
-    return QRectF(top_left, bottom_right)
+    if cell:
+        top_left = QPointF(cell.x - size / 2, cell.y - size / 2)
+        bottom_right = QPointF(cell.x + size / 2, cell.y + size / 2)
+        return QRectF(top_left, bottom_right)
+
+    return None
 
 
 def read_file(file_name: str) -> str:
@@ -25,6 +29,16 @@ def read_file(file_name: str) -> str:
 
     with open(file_name, "r", encoding="utf-8") as file:
         return file.read()
+
+
+def save_to_file(file_name: str, text: str) -> None:
+    """
+    :param file_name: имя файла, в который сохранить текст;
+    :param text: текст, который нужно сохранить.
+    """
+
+    with open(file_name, "w", encoding="utf-8") as file:
+        file.write(text)
 
 
 def show_message(title: str, text: str, icon: QMessageBox.Icon = QMessageBox.Information, additional_text: str = "",

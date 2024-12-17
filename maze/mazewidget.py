@@ -53,26 +53,33 @@ class MazeWidget(QGraphicsView):
         self._path_pen.setCosmetic(True)
 
     def _draw_mesh(self) -> None:
-        self.scene().addRect(self._maze.maze_boundaries, self._border_pen)
-        for y in range(self._maze.y_size - 1):
-            self.scene().addLine(QLineF(QPointF(-0.5, y + 0.5), QPointF(self._maze.x_size - 0.5, y + 0.5)),
-                                 self._line_pen)
+        if self._maze.maze_boundaries:
+            self.scene().addRect(self._maze.maze_boundaries, self._border_pen)
+            for y in range(self._maze.y_size - 1):
+                self.scene().addLine(QLineF(QPointF(-0.5, y + 0.5), QPointF(self._maze.x_size - 0.5, y + 0.5)),
+                                     self._line_pen)
 
-        for x in range(self._maze.x_size - 1):
-            self.scene().addLine(QLineF(QPointF(x + 0.5, -0.5), QPointF(x + 0.5, self._maze.y_size - 0.5)),
-                                 self._line_pen)
+            for x in range(self._maze.x_size - 1):
+                self.scene().addLine(QLineF(QPointF(x + 0.5, -0.5), QPointF(x + 0.5, self._maze.y_size - 0.5)),
+                                     self._line_pen)
 
     def _draw_obstacles(self) -> None:
         for obstacle in self._maze.get_rects_for_obstacles():
             self.scene().addRect(obstacle, self._obstacle_pen, self._obstacle_brush)
 
     def _draw_start_and_finish_cells(self) -> None:
-        self.scene().addEllipse(self._maze.get_rect_for_finish_cell(), self._finish_cell_pen, self._finish_cell_brush)
-        self.scene().addEllipse(self._maze.get_rect_for_start_cell(), self._start_cell_pen, self._start_cell_brush)
+        finish_cell = self._maze.get_rect_for_finish_cell()
+        if finish_cell:
+            self.scene().addEllipse(finish_cell, self._finish_cell_pen, self._finish_cell_brush)
+
+        start_cell = self._maze.get_rect_for_start_cell()
+        if start_cell:
+            self.scene().addEllipse(start_cell, self._start_cell_pen, self._start_cell_brush)
 
     def _fit_image(self) -> None:
-        self.fitInView(QRectF(QPointF(-1, -1), QSizeF(self._maze.x_size + 1, self._maze.y_size + 1)),
-                       Qt.AspectRatioMode.KeepAspectRatio)
+        if self._maze.x_size is not None and self._maze.y_size:
+            self.fitInView(QRectF(QPointF(-1, -1), QSizeF(self._maze.x_size + 1, self._maze.y_size + 1)),
+                           Qt.AspectRatioMode.KeepAspectRatio)
 
     def _set_view_parameters(self) -> None:
         self.setFocusPolicy(Qt.StrongFocus)

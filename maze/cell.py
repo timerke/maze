@@ -20,7 +20,10 @@ class Cell:
         self.f = 0  # Сумма g и h
 
     def __eq__(self, other) -> bool:
-        return self.x == other.x and self.y == other.y
+        if hasattr(other, "x") and hasattr(other, "y"):
+            return self.x == other.x and self.y == other.y
+
+        return False
 
     def __lt__(self, other) -> bool:
         return self.f < other.f
